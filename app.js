@@ -14,7 +14,7 @@ document.getElementById('submit-btn').addEventListener('click', async () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `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`, // 替換為安全的 API Key
+                'Authorization': ``, // 替換為安全的 API Key
             },
             body: JSON.stringify({
                 model: 'gpt-3.5-turbo', 
