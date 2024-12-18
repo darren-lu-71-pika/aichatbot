@@ -14,7 +14,7 @@ document.getElementById('submit-btn').addEventListener('click', async () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `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`, // 请替换为正确的 API 密钥
+                'Authorization': `Bearer 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`, // 请替换为正确的 API 密钥
             },
             body: JSON.stringify({
                 model: 'gpt-4o-mini-2024-07-18', // 修正为有效的模型名称
