@@ -1,23 +1,23 @@
 document.getElementById('submit-btn').addEventListener('click', async () => {
     const userInput = document.getElementById('user-input').value;
     const outputDiv = document.getElementById('output');
-
+    
     if (!userInput) {
         outputDiv.textContent = 'Please enter a prompt.';
         return;
     }
-
-    outputDiv.textContent = 'Loading...';
-
+    
+    outputDiv.textContent = '寶寶想一下';
+    
     try {
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': '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', // 替换为你的 OpenAI API 密钥
+                'Authorization': `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}`, // 使用環境變數
             },
             body: JSON.stringify({
-                model: 'gpt-4o-mini-2024-07-18', // 使用的 AI 模型
+                model: 'gpt-4o-mini', // 修正模型名稱
                 messages: [
                     {
                         role: 'system',
@@ -28,11 +28,18 @@ document.getElementById('submit-btn').addEventListener('click', async () => {
                         content: userInput,
                     },
                 ],
-                max_tokens: 100, // 限制返回的字符数
+                max_tokens: 150, // 建議略微增加
+                temperature: 0.7, // 添加溫度參數控制隨機性
             }),
         });
 
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error.message || 'API request failed');
+        }
+
         const data = await response.json();
+        
         if (data.choices && data.choices[0]) {
             outputDiv.textContent = data.choices[0].message.content.trim();
         } else {
@@ -40,5 +47,6 @@ document.getElementById('submit-btn').addEventListener('click', async () => {
         }
     } catch (error) {
         outputDiv.textContent = `Error: ${error.message}`;
+        console.error('Full error:', error);
     }
 });
