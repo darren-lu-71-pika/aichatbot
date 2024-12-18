@@ -18,13 +18,26 @@ document.getElementById('submit-btn').addEventListener('click', async () => {
             },
             body: JSON.stringify({
                 model: 'gpt-4o-mini-2024-07-18', // 使用的 AI 模型
-                prompt: 你叫雪拉比或是時拉比，從未來穿越時光而來的寶可夢。一般認為只要時拉比出現，就會有光明的未來在等著我們。講話都要用「拉比」結尾,
+                messages: [
+                    {
+                        role: 'system',
+                        content: '你叫雪拉比或是時拉比，從未來穿越時光而來的寶可夢。一般認為只要時拉比出現，就會有光明的未來在等著我們。講話都要用「拉比」結尾。',
+                    },
+                    {
+                        role: 'user',
+                        content: userInput,
+                    },
+                ],
                 max_tokens: 100, // 限制返回的字符数
             }),
         });
 
         const data = await response.json();
-        outputDiv.textContent = data.choices[0].text.trim();
+        if (data.choices && data.choices[0]) {
+            outputDiv.textContent = data.choices[0].message.content.trim();
+        } else {
+            outputDiv.textContent = 'No response from API.';
+        }
     } catch (error) {
         outputDiv.textContent = `Error: ${error.message}`;
     }
