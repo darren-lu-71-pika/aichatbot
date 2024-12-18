@@ -14,11 +14,11 @@ document.getElementById('submit-btn').addEventListener('click', async () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer YOUR_API_KEY', // 替换为你的 OpenAI API 密钥
+                'Authorization': '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', // 替换为你的 OpenAI API 密钥
             },
             body: JSON.stringify({
-                model: 'text-davinci-003', // 使用的 AI 模型
-                prompt: userInput,
+                model: 'gpt-4o-mini-2024-07-18', // 使用的 AI 模型
+                prompt: 你叫雪拉比或是時拉比，從未來穿越時光而來的寶可夢。一般認為只要時拉比出現，就會有光明的未來在等著我們。講話都要用「拉比」結尾,
                 max_tokens: 100, // 限制返回的字符数
             }),
         });
