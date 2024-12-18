@@ -7,17 +7,17 @@ document.getElementById('submit-btn').addEventListener('click', async () => {
         return;
     }
     
-    outputDiv.textContent = '寶寶想一下';
+    outputDiv.textContent = '寶寶想一下拉比...';
     
     try {
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer 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`, // 请替换为正确的 API 密钥
+                'Authorization': `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`, // 替換為安全的 API Key
             },
             body: JSON.stringify({
-                model: 'gpt-4o-mini-2024-07-18', // 修正为有效的模型名称
+                model: 'gpt-3.5-turbo', 
                 messages: [
                     {
                         role: 'system',
@@ -28,27 +28,25 @@ document.getElementById('submit-btn').addEventListener('click', async () => {
                         content: userInput,
                     },
                 ],
-                max_tokens: 150, // 可以略微增加
-                temperature: 0.7, // 控制生成的随机性
+                max_tokens: 200,  // 增加一些 tokens
+                temperature: 0.7,
             }),
         });
 
-        // 如果响应不成功，抛出错误
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error.message || 'API request failed');
+            const errorData = await response.text(); // 使用 text() 更穩妥
+            throw new Error(`API error: ${errorData}`);
         }
 
         const data = await response.json();
-
-        // 检查响应并显示结果
-        if (data.choices && data.choices[0] && data.choices[0].message) {
-            outputDiv.textContent = data.choices[0].message.content.trim();
+        
+        if (data.choices && data.choices[0]?.message?.content) {
+            outputDiv.textContent = data.choices[0].message.content.trim() + '拉比';
         } else {
-            outputDiv.textContent = 'No response from API.';
+            outputDiv.textContent = '寶寶想不出話來拉比';
         }
     } catch (error) {
-        outputDiv.textContent = `Error: ${error.message}`;
+        outputDiv.textContent = `出錯了拉比: ${error.message}`;
         console.error('Full error:', error);
     }
 });
