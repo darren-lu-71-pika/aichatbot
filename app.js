@@ -10,7 +10,7 @@ document.getElementById('submit-btn').addEventListener('click', async () => {
     outputDiv.textContent = 'Loading...';
 
     try {
-        const response = await fetch('https://api.openai.com/v1/completions', {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
