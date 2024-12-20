@@ -71,7 +71,7 @@
   <button onclick="sendMessage()" id="submit-btn">送出</button>
 
   <script>
-    const API_KEY = "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"; // Replace this with your actual OpenAI API key
+    const API_KEY = "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"; // 替换为实际的 OpenAI API 密钥
 
     let isProcessing = false;
 
@@ -108,18 +108,20 @@
           })
         });
 
+        // 检查 HTTP 状态
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
         
+        // 检查 API 返回的错误
         if (data.error) {
           throw new Error(data.error.message);
         }
         
         responseDiv.textContent = data.choices[0].message.content || "無回應";
-        document.getElementById('user-input').value = '';  // 清空輸入框
+        document.getElementById('user-input').value = '';  // 清空输入框
       } catch (error) {
         console.error('Error:', error);
         responseDiv.textContent = `發生錯誤：${error.message}`;
@@ -130,12 +132,4 @@
       }
     }
 
-    document.getElementById('user-input').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
-  </script>
-</body>
-</html>
+    document.getElementById('user-input
