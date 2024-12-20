@@ -74,7 +74,7 @@
 
       responseDiv.textContent = "思考中...";
       try {
-        const response = await fetch("https://timely-licorice-a50a96.netlify.app/.netlify/functions/chat", {
+        const response = await fetch("https://script.google.com/macros/s/AKfycbx4sS26a0Kea31sfRH3MgJ2o7EgITjgfOuCmAOq9C7OktBEnsX9piHv9WhawwceP8RL/exec", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message: userInput })
