@@ -71,7 +71,11 @@
   <button onclick="sendMessage()" id="submit-btn">送出</button>
 
   <script>
+    let isProcessing = false;
+
     async function sendMessage() {
+      if (isProcessing) return;
+
       const userInput = document.getElementById('user-input').value;
       const responseDiv = document.getElementById('response');
       const submitButton = document.getElementById('submit-btn');
@@ -82,53 +86,45 @@
         return;
       }
 
+      isProcessing = true;
       submitButton.disabled = true;
       responseDiv.classList.remove('error');
       responseDiv.textContent = "思考中...";
       
       try {
-        // 使用 JSONP 方式發送請求
-        const scriptId = 'jsonp-script';
-        const oldScript = document.getElementById(scriptId);
-        if (oldScript) {
-          oldScript.remove();
+        const response = await fetch("https://script.google.com/macros/s/AKfycbzkETKSTJ2fNjwa7uUiMPyI1az08FYHwrG5cWAsTNmM3xfwi0XgH1WkkpFFLHaKsiHY/exec", {
+          method: 'POST',
+          mode: 'cors',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: userInput
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const script = document.createElement('script');
-        script.id = scriptId;
+        const data = await response.json();
         
-        // 添加時間戳防止緩存
-        const timestamp = new Date().getTime();
-        const url = new URL("https://script.google.com/macros/s/AKfycbxKybaEU2lIUBmew6fzaMgimXI2TsfhDKFnnihf8yk5con18wLA_eYXSlyWzUTVeB1R/exec");
-        url.searchParams.append('message', userInput);
-        url.searchParams.append('callback', 'handleResponse');
-        url.searchParams.append('_', timestamp);
+        if (data.error) {
+          throw new Error(data.error);
+        }
         
-        script.src = url.toString();
-        
-        // 定義回調函數
-        window.handleResponse = function(data) {
-          if (data.error) {
-            responseDiv.textContent = `發生錯誤：${data.error}`;
-            responseDiv.classList.add('error');
-          } else {
-            responseDiv.textContent = data.reply || "無回應";
-          }
-          submitButton.disabled = false;
-          script.remove();
-        };
-        
-        document.body.appendChild(script);
-        
+        responseDiv.textContent = data.reply || "無回應";
+        document.getElementById('user-input').value = '';  // 清空輸入框
       } catch (error) {
         console.error('Error:', error);
         responseDiv.textContent = `發生錯誤：${error.message}`;
         responseDiv.classList.add('error');
+      } finally {
+        isProcessing = false;
         submitButton.disabled = false;
       }
     }
 
-    // 添加按Enter鍵發送功能
     document.getElementById('user-input').addEventListener('keypress', function(e) {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
