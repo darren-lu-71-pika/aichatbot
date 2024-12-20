@@ -68,7 +68,7 @@
     </div>
 
     <script>
-        const OPENAI_API_KEY = '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'; // 請替換為你的 OpenAI API 金鑰
+        const OPENAI_API_KEY = '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'; // 請替換為你的 OpenAI API 金鑰
 
         function sendMessage() {
             const userMessage = document.getElementById('userInput').value;
@@ -94,8 +94,13 @@
             })
             .then(response => response.json())
             .then(data => {
-                const aiMessage = data.choices[0].message.content;
-                addMessage(aiMessage, 'ai');
+                if (data.choices && data.choices.length > 0) {
+                    const aiMessage = data.choices[0].message.content;
+                    addMessage(aiMessage, 'ai');
+                } else {
+                    console.error('No response from OpenAI API');
+                    addMessage('抱歉，無法獲取回應', 'ai');
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
