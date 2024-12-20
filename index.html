@@ -22,6 +22,7 @@
       border-radius: 5px;
       background-color: #f9f9f9;
       overflow-y: auto;
+      white-space: pre-wrap;
     }
     #image {
       width: 300px;
@@ -52,39 +53,74 @@
     button:hover {
       background-color: #0056b3;
     }
+    .error {
+      color: red;
+    }
   </style>
 </head>
 <body>
   <div id="response">AI 回覆將顯示在這裡</div>
   <div id="image">
-  <img src="https://tw.portal-pokemon.com/play/resources/pokedex/img/pm/af204c2381a4d78eae3f801521137bbf63ffd944.png" alt="圖片描述" style="width:300px; height:300px; object-fit:cover;">
+    <img src="https://tw.portal-pokemon.com/play/resources/pokedex/img/pm/af204c2381a4d78eae3f801521137bbf63ffd944.png" alt="圖片描述" style="width:300px; height:300px; object-fit:cover;">
   </div>
   <textarea id="user-input" placeholder="輸入您的問題..."></textarea>
-  <button onclick="sendMessage()">送出</button>
+  <button onclick="sendMessage()" id="submit-btn">送出</button>
 
   <script>
     async function sendMessage() {
       const userInput = document.getElementById('user-input').value;
       const responseDiv = document.getElementById('response');
+      const submitButton = document.getElementById('submit-btn');
       
-      if (!userInput) {
+      if (!userInput.trim()) {
         responseDiv.textContent = "請輸入訊息！";
+        responseDiv.classList.add('error');
         return;
       }
 
+      // 禁用按鈕防止重複提交
+      submitButton.disabled = true;
+      responseDiv.classList.remove('error');
       responseDiv.textContent = "思考中...";
+      
       try {
-        const response = await fetch("https://script.google.com/macros/s/AKfycbxgAfDwxfSqx3RK2UTwlDDDHRBVWOICrZFZacB3t0tRyXP8mWQN9v-H10FdeBh4cONT/exec", {
+        const response = await fetch("https://script.google.com/macros/s/AKfycbw1JPmFd1JcpbmTMLvItMPkRZOnEeoaPZJIFfclVDYdT1YN_h_ezpRCSHcHO9dncsC0/exec", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: userInput })
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({ message: userInput }),
+          mode: 'cors'
         });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
+        
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        
         responseDiv.textContent = data.reply || "無回應";
       } catch (error) {
-        responseDiv.textContent = "發生錯誤，請稍後再試。";
+        console.error('Error:', error);
+        responseDiv.textContent = `發生錯誤：${error.message}`;
+        responseDiv.classList.add('error');
+      } finally {
+        submitButton.disabled = false;
       }
     }
+
+    // 添加按Enter鍵發送功能
+    document.getElementById('user-input').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
   </script>
 </body>
 </html>
