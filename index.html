@@ -103,8 +103,10 @@
           })
         });
 
+        // 確認請求是否成功
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          const errorText = await response.text();
+          throw new Error(`HTTP 錯誤: ${response.status} - ${errorText}`);
         }
 
         const data = await response.json();
@@ -125,6 +127,7 @@
       }
     }
 
+    // 設置按 Enter 快捷發送
     document.getElementById('user-input').addEventListener('keypress', function(e) {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
