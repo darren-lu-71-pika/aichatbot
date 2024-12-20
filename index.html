@@ -53,6 +53,10 @@
     button:hover {
       background-color: #0056b3;
     }
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
     .error {
       color: red;
     }
@@ -84,14 +88,12 @@
       responseDiv.textContent = "思考中...";
       
       try {
-        const response = await fetch("https://script.google.com/macros/s/AKfycbw1JPmFd1JcpbmTMLvItMPkRZOnEeoaPZJIFfclVDYdT1YN_h_ezpRCSHcHO9dncsC0/exec", {
+        const response = await fetch("https://script.google.com/macros/s/AKfycbxaV6RHIQlWkHg0SojZwkJClEP1Noohr4Dx7JMX4QnDANuOFYBdKfPbgfVTYfIWrTWb/exec", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json"
           },
           body: JSON.stringify({ message: userInput }),
-          mode: 'cors'
         });
 
         if (!response.ok) {
