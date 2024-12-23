@@ -1,186 +1,134 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 互動頁面</title>
+    <title>AI 聊天室</title>
     <style>
         body {
-            background-color: #A1E7D8; /* 蒂芬妮綠色 */
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 50px auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .avatar {
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            background-color: #eee;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .input-box {
+            background-color: #81D8D0; /* 蒂芬妮綠色 */
+            font-family: 'Arial', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
         }
 
-        .input-box textarea {
+        .avatar-container {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 20px 0;
+            border: 5px solid white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+
+        #avatar-image {
             width: 100%;
-            padding: 10px;
-            border: 2px solid #A1E7D8;
-            border-radius: 10px;
-            font-size: 16px;
-            margin-bottom: 10px;
-            resize: none;
-            height: 80px;
+            height: 100%;
+            object-fit: cover;
         }
 
-        .input-box button {
-            background-color: #A1E7D8;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
+        .chat-container {
+            width: 90%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
         }
 
-        .input-box button:hover {
-            background-color: #81cbb4;
+        .input-group {
+            margin-bottom: 20px;
         }
 
-        .response-box {
-            margin-top: 20px;
-            background-color: #f9f9f9;
+        textarea {
+            width: 100%;
             padding: 15px;
-            border-radius: 10px;
-            border: 1px solid #eee;
+            border: 2px solid #81D8D0;
+            border-radius: 15px;
             font-size: 16px;
-            min-height: 50px;
+            resize: vertical;
+            min-height: 100px;
+            background: white;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
         }
 
-        .prompt-box {
-            margin-top: 20px;
-            text-align: left;
+        textarea:focus {
+            outline: none;
+            border-color: #5fb4ae;
         }
 
-        .prompt-box textarea {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #A1E7D8;
-            border-radius: 10px;
-            font-size: 16px;
-            resize: none;
-            height: 60px;
-        }
-
-        .image-url-input {
-            margin-top: 10px;
-            text-align: center;
-        }
-
-        .image-url-input input {
-            width: 80%;
-            padding: 10px;
-            border: 2px solid #A1E7D8;
-            border-radius: 10px;
-            font-size: 16px;
+        label {
+            display: block;
             margin-bottom: 10px;
+            font-weight: bold;
+            color: #2c7a74;
         }
 
-        .image-url-input button {
-            background-color: #A1E7D8;
+        button {
+            background-color: #5fb4ae;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 16px;
+            padding: 12px 25px;
+            border-radius: 25px;
             cursor: pointer;
+            font-size: 16px;
             transition: background-color 0.3s;
         }
 
-        .image-url-input button:hover {
-            background-color: #81cbb4;
+        button:hover {
+            background-color: #4a908b;
+        }
+
+        #response {
+            background: white;
+            border: 2px solid #81D8D0;
+            border-radius: 15px;
+            padding: 15px;
+            min-height: 100px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+        }
+
+        .settings {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="avatar" id="avatar"></div>
-        <div class="image-url-input">
-            <input type="text" id="imageUrl" placeholder="https://tw.portal-pokemon.com/play/resources/pokedex/img/pm/af204c2381a4d78eae3f801521137bbf63ffd944.png">
-            <button onclick="setAvatarImage()">更新頭像</button>
+    <div class="avatar-container">
+        <!-- 在這裡替換圖片URL -->
+        <img id="avatar-image" src="替換為你的圖片URL" alt="AI Avatar">
+    </div>
+
+    <div class="chat-container">
+        <div class="input-group">
+            <label for="userInput">請輸入你的訊息：</label>
+            <textarea id="userInput" placeholder="在這裡輸入訊息..."></textarea>
         </div>
-        <div class="input-box">
-            <textarea id="userInput" placeholder="請輸入您的問題..."></textarea>
-            <button onclick="sendToAI()">送出</button>
-        </div>
-        <div class="response-box" id="aiResponse">AI 的回覆會顯示在這裡。</div>
-        <div class="prompt-box">
-            <label for="customPrompt">AI Prompt 設定：</label>
-            <textarea id="customPrompt" placeholder="請輸入您的 prompt..."></textarea>
+        <button onclick="sendMessage()">傳送訊息</button>
+        <div class="input-group">
+            <label>AI 的回覆：</label>
+            <div id="response"></div>
         </div>
     </div>
 
-    <script>
-        function setAvatarImage() {
-            const imageUrl = document.getElementById('imageUrl').value;
-            const avatar = document.getElementById('avatar');
-            if (imageUrl.trim()) {
-                avatar.style.backgroundImage = `url('${imageUrl}')`;
-            } else {
-                alert("請輸入有效的圖片網址！");
-            }
-        }
+    <div class="settings">
+        <div class="input-group">
+            <label for="promptTemplate">AI Prompt 設定：</label>
+            <textarea id="promptTemplate" placeholder="在這裡設定 AI 的 prompt...">你是一個友善的AI助手。請用簡短、清楚的方式回答問題。</textarea>
+        </div>
+    </div>
 
-        async function sendToAI() {
-            const userInput = document.getElementById('userInput').value;
-            const customPrompt = document.getElementById('customPrompt').value;
-            const apiUrl = "https://script.google.com/macros/s/AKfycbxejsO20_9vjCvxreB3QWmTP_ibS_a-K0okeIIF0Mg6fmykQwuJZBW5Hopzehl81X3t/exec"; // 替換為你的 Apps Script 部署網址
-
-            if (!userInput.trim()) {
-                alert("請輸入問題！");
-                return;
-            }
-
-            const payload = {
-                input: userInput,
-                prompt: customPrompt
-            };
-
-            document.getElementById('aiResponse').innerText = "正在處理...";
-
-            try {
-                const response = await fetch(apiUrl, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-                document.getElementById('aiResponse').innerText = result.reply || "AI 無法回覆，請再試一次。";
-            } catch (error) {
-                document.getElementById('aiResponse').innerText = "發生錯誤，請稍後再試。";
-                console.error(error);
-            }
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
