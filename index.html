@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI 聊天室</title>
+    <!-- 其他 style 代碼保持不變 -->
     <style>
+        /* 保持原有的所有 style 內容 */
         body {
             background-color: #81D8D0;
             font-family: 'Arial', sans-serif;
@@ -23,7 +25,7 @@
             overflow: hidden;
             margin: 20px 0;
             border: 5px solid white;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
         }
 
         #avatar-image {
@@ -38,28 +40,23 @@
             background: rgba(255, 255, 255, 0.9);
             border-radius: 20px;
             padding: 20px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
         }
 
         .input-group {
             margin-bottom: 20px;
         }
 
-        textarea,
-        #response {
+        textarea {
             width: 100%;
             padding: 15px;
             border: 2px solid #81D8D0;
             border-radius: 15px;
             font-size: 16px;
-            background: white;
-            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
-            box-sizing: border-box;
-        }
-
-        textarea {
             resize: vertical;
             min-height: 100px;
+            background: white;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
         }
 
         textarea:focus {
@@ -89,6 +86,16 @@
             background-color: #4a908b;
         }
 
+        #response {
+            background: white;
+            border: 2px solid #81D8D0;
+            border-radius: 15px;
+            padding: 15px;
+            min-height: 100px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+        }
+
         .settings {
             margin-top: 20px;
             padding: 20px;
@@ -106,12 +113,12 @@
 
     <div class="chat-container">
         <div class="input-group">
-            <label for="userInput">請輸入你的訊息：</label>
-            <textarea id="userInput" placeholder="對寶寶說什麼呢"></textarea>
+            <label for="userInput">問寶寶什麼：</label>
+            <textarea id="userInput" placeholder="想跟寶寶說的話..."></textarea>
         </div>
         <button onclick="sendMessage()">傳送訊息</button>
         <div class="input-group">
-            <label>AI 的回覆：</label>
+            <label>寶寶的回覆：</label>
             <div id="response"></div>
         </div>
     </div>
@@ -119,7 +126,7 @@
     <div class="settings">
         <div class="input-group">
             <label for="promptTemplate">AI Prompt 設定：</label>
-            <textarea id="promptTemplate" placeholder="在這裡設定 AI 的 prompt...">你是寶可夢時拉比，請站在時拉比的立場以及寶可夢的世界觀上回答任何問題。</textarea>
+            <textarea id="promptTemplate" placeholder="在這裡設定 AI 的 prompt...">你是寶可夢時拉比，請依據寶可夢世界的知識回答提問者的問題。</textarea>
         </div>
     </div>
 
@@ -140,15 +147,17 @@
             const responseDiv = document.getElementById('response');
 
             if (!userInput) {
-                alert('對寶寶說什麼');
+                alert('請輸入訊息！');
                 return;
             }
 
-            responseDiv.textContent = '寶寶想一想...';
+            responseDiv.textContent = '正在思考中...';
 
+            // 使用 JSONP 方式發送請求
             const script = document.createElement('script');
             const callbackName = 'jsonpCallback_' + Date.now();
-
+            
+            // 定義回調函數
             window[callbackName] = function(data) {
                 if (data.error) {
                     responseDiv.textContent = '抱歉，發生錯誤了：' + data.error;
@@ -156,9 +165,29 @@
                     responseDiv.textContent = data.response;
                     document.getElementById('userInput').value = '';
                 }
+                // 清理回調函數和腳本標籤
                 delete window[callbackName];
                 document.body.removeChild(script);
             };
 
-            const gasUrl = 'https://script.google.com/macros/s/AKfycbwX-pULXe_gIAlHxPc7PLo38sN1priJu5_b12HKkcu_nzL5Kew7a0en42b7no6Oehkl/exec';
-            const p
+            const gasUrl = 'https://script.google.com/macros/s/AKfycbwl4Qj2l4YhT38t5ppsPU3YgzE_c_rBgpizC_psdZ0UpyLu8tS41kvXIOJcd3eDWF2o/exec';
+            const params = new URLSearchParams({
+                callback: callbackName,
+                message: userInput,
+                prompt: promptTemplate
+            });
+
+            script.src = `${gasUrl}?${params.toString()}`;
+            document.body.appendChild(script);
+        }
+
+        // Enter 鍵發送
+        document.getElementById('userInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
