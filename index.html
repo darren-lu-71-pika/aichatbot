@@ -113,12 +113,12 @@
 
     <div class="chat-container">
         <div class="input-group">
-            <label for="userInput">問寶寶什麼：</label>
-            <textarea id="userInput" placeholder="想跟寶寶說的話..."></textarea>
+            <label for="userInput">請輸入你的訊息：</label>
+            <textarea id="userInput" placeholder="在這裡輸入訊息..."></textarea>
         </div>
         <button onclick="sendMessage()">傳送訊息</button>
         <div class="input-group">
-            <label>寶寶的回覆：</label>
+            <label>AI 的回覆：</label>
             <div id="response"></div>
         </div>
     </div>
@@ -126,7 +126,7 @@
     <div class="settings">
         <div class="input-group">
             <label for="promptTemplate">AI Prompt 設定：</label>
-            <textarea id="promptTemplate" placeholder="在這裡設定 AI 的 prompt...">你是寶可夢時拉比，請依據寶可夢世界的知識回答提問者的問題。</textarea>
+            <textarea id="promptTemplate" placeholder="在這裡設定 AI 的 prompt...">你是一個友善的AI助手。請用簡短、清楚的方式回答問題。</textarea>
         </div>
     </div>
 
@@ -170,7 +170,7 @@
                 document.body.removeChild(script);
             };
 
-            const gasUrl = 'https://script.google.com/macros/s/AKfycbwl4Qj2l4YhT38t5ppsPU3YgzE_c_rBgpizC_psdZ0UpyLu8tS41kvXIOJcd3eDWF2o/exec';
+            const gasUrl = 'https://script.google.com/macros/s/AKfycbzLqHmJqy4Wv2v8zU9I7bPY57Qx9L5rVtx9HIX4dkqbz3k0rbbfwRL7IGYCIK5JF8oL/exec';
             const params = new URLSearchParams({
                 callback: callbackName,
                 message: userInput,
