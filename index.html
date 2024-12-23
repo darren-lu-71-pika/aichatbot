@@ -107,7 +107,7 @@
 <body>
     <div class="avatar-container">
         <!-- 在這裡替換圖片URL -->
-        <img id="avatar-image" src="替換為你的圖片URL" alt="AI Avatar">
+        <img id="avatar-image" src="https://tw.portal-pokemon.com/play/resources/pokedex/img/pm/af204c2381a4d78eae3f801521137bbf63ffd944.png" alt="AI Avatar">
     </div>
 
     <div class="chat-container">
@@ -129,6 +129,59 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // 用於儲存最後發送請求的時間
+        let lastRequestTime = 0;
+        const COOLDOWN_TIME = 1000; // 冷卻時間（毫秒）
+
+        function sendMessage() {
+            const currentTime = Date.now();
+            if (currentTime - lastRequestTime < COOLDOWN_TIME) {
+                alert('請稍等一下再發送下一條訊息！');
+                return;
+            }
+            lastRequestTime = currentTime;
+
+            const userInput = document.getElementById('userInput').value.trim();
+            const promptTemplate = document.getElementById('promptTemplate').value.trim();
+            const responseDiv = document.getElementById('response');
+
+            if (!userInput) {
+                alert('請輸入訊息！');
+                return;
+            }
+
+            responseDiv.textContent = '正在思考中...';
+            
+            // 調用 GAS 部署的網頁應用程式 URL
+            const gasUrl = 'https://script.google.com/macros/s/AKfycbwl4Qj2l4YhT38t5ppsPU3YgzE_c_rBgpizC_psdZ0UpyLu8tS41kvXIOJcd3eDWF2o/exec';  // 替換為你的 GAS 部署 URL
+
+            fetch(gasUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: userInput,
+                    prompt: promptTemplate
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                responseDiv.textContent = data.response;
+            })
+            .catch(error => {
+                responseDiv.textContent = '抱歉，發生錯誤了：' + error.message;
+            });
+        }
+
+        // 按下 Enter 鍵時發送訊息（同時按住 Shift 鍵則換行）
+        document.getElementById('userInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    </script>
 </body>
 </html>
