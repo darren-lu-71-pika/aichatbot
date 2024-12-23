@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI 聊天室</title>
+    <!-- 其他 style 代碼保持不變 -->
     <style>
+        /* 保持原有的所有 style 內容 */
         body {
-            background-color: #81D8D0; /* 蒂芬妮綠色 */
+            background-color: #81D8D0;
             font-family: 'Arial', sans-serif;
             display: flex;
             flex-direction: column;
@@ -106,7 +108,6 @@
 </head>
 <body>
     <div class="avatar-container">
-        <!-- 在這裡替換圖片URL -->
         <img id="avatar-image" src="https://tw.portal-pokemon.com/play/resources/pokedex/img/pm/af204c2381a4d78eae3f801521137bbf63ffd944.png" alt="AI Avatar">
     </div>
 
@@ -130,9 +131,8 @@
     </div>
 
     <script>
-        // 用於儲存最後發送請求的時間
         let lastRequestTime = 0;
-        const COOLDOWN_TIME = 1000; // 冷卻時間（毫秒）
+        const COOLDOWN_TIME = 1000;
 
         function sendMessage() {
             const currentTime = Date.now();
@@ -152,40 +152,36 @@
             }
 
             responseDiv.textContent = '正在思考中...';
-            
-            const gasUrl = 'https://script.google.com/macros/s/AKfycbyfn__zrjF4PUtFrUdshh_vnhZKbltYaNNa-7OmedP78BYYj-A5oGsp_FHrI8YjeEe6/exec';
 
-            fetch(gasUrl, {
-                method: 'POST',
-                mode: 'cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    message: userInput,
-                    prompt: promptTemplate
-                })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
+            // 使用 JSONP 方式發送請求
+            const script = document.createElement('script');
+            const callbackName = 'jsonpCallback_' + Date.now();
+            
+            // 定義回調函數
+            window[callbackName] = function(data) {
                 if (data.error) {
-                    throw new Error(data.error);
+                    responseDiv.textContent = '抱歉，發生錯誤了：' + data.error;
+                } else {
+                    responseDiv.textContent = data.response;
+                    document.getElementById('userInput').value = '';
                 }
-                responseDiv.textContent = data.response;
-                document.getElementById('userInput').value = ''; // 清空輸入框
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                responseDiv.textContent = '抱歉，發生錯誤了：' + error.message;
+                // 清理回調函數和腳本標籤
+                delete window[callbackName];
+                document.body.removeChild(script);
+            };
+
+            const gasUrl = 'https://script.google.com/macros/s/AKfycbxYwBJY9vrlCgX5-SH-djhTtsh5TK24_ueu8herkiUzRHJWVYhqg8_81eoJhqT_txMb/exec';
+            const params = new URLSearchParams({
+                callback: callbackName,
+                message: userInput,
+                prompt: promptTemplate
             });
+
+            script.src = `${gasUrl}?${params.toString()}`;
+            document.body.appendChild(script);
         }
 
-        // 按下 Enter 鍵時發送訊息（同時按住 Shift 鍵則換行）
+        // Enter 鍵發送
         document.getElementById('userInput').addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
