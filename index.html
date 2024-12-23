@@ -153,11 +153,11 @@
 
             responseDiv.textContent = '正在思考中...';
             
-            // 調用 GAS 部署的網頁應用程式 URL
-            const gasUrl = 'https://script.google.com/macros/s/AKfycbwl4Qj2l4YhT38t5ppsPU3YgzE_c_rBgpizC_psdZ0UpyLu8tS41kvXIOJcd3eDWF2o/exec';  // 替換為你的 GAS 部署 URL
+            const gasUrl = 'https://script.google.com/macros/s/AKfycbyfn__zrjF4PUtFrUdshh_vnhZKbltYaNNa-7OmedP78BYYj-A5oGsp_FHrI8YjeEe6/exec';
 
             fetch(gasUrl, {
                 method: 'POST',
+                mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -166,11 +166,21 @@
                     prompt: promptTemplate
                 })
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
                 responseDiv.textContent = data.response;
+                document.getElementById('userInput').value = ''; // 清空輸入框
             })
             .catch(error => {
+                console.error('Error:', error);
                 responseDiv.textContent = '抱歉，發生錯誤了：' + error.message;
             });
         }
