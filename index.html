@@ -1,139 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Interaction</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin: 0;
-      padding: 20px;
-    }
-    #response {
-      width: 80%;
-      height: 200px;
-      margin-bottom: 20px;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      background-color: #f9f9f9;
-      overflow-y: auto;
-      white-space: pre-wrap;
-    }
-    #image {
-      width: 300px;
-      height: 300px;
-      border: 1px solid #ccc;
-      margin-bottom: 20px;
-      text-align: center;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: #f1f1f1;
-    }
-    #user-input {
-      width: 80%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    button {
-      margin-top: 10px;
-      padding: 10px 20px;
-      background-color: #007BFF;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    button:disabled {
-      background-color: #cccccc;
-      cursor: not-allowed;
-    }
-    .error {
-      color: red;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 互動頁面</title>
+    <style>
+        body {
+            background-color: #A1E7D8; /* 蒂芬妮綠色 */
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .avatar {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            background-color: #eee;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .input-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .input-box textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #A1E7D8;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            resize: none;
+            height: 80px;
+        }
+
+        .input-box button {
+            background-color: #A1E7D8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .input-box button:hover {
+            background-color: #81cbb4;
+        }
+
+        .response-box {
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #eee;
+            font-size: 16px;
+            min-height: 50px;
+        }
+
+        .prompt-box {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .prompt-box textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #A1E7D8;
+            border-radius: 10px;
+            font-size: 16px;
+            resize: none;
+            height: 60px;
+        }
+
+        .image-url-input {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .image-url-input input {
+            width: 80%;
+            padding: 10px;
+            border: 2px solid #A1E7D8;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .image-url-input button {
+            background-color: #A1E7D8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .image-url-input button:hover {
+            background-color: #81cbb4;
+        }
+    </style>
 </head>
 <body>
-  <div id="response">AI 回覆將顯示在這裡</div>
-  <div id="image">
-    <img src="https://tw.portal-pokemon.com/play/resources/pokedex/img/pm/af204c2381a4d78eae3f801521137bbf63ffd944.png" alt="圖片描述" style="width:300px; height:300px; object-fit:cover;">
-  </div>
-  <textarea id="user-input" placeholder="輸入您的問題..."></textarea>
-  <button onclick="sendMessage()" id="submit-btn">送出</button>
+    <div class="container">
+        <div class="avatar" id="avatar"></div>
+        <div class="image-url-input">
+            <input type="text" id="imageUrl" placeholder="https://tw.portal-pokemon.com/play/resources/pokedex/img/pm/af204c2381a4d78eae3f801521137bbf63ffd944.png">
+            <button onclick="setAvatarImage()">更新頭像</button>
+        </div>
+        <div class="input-box">
+            <textarea id="userInput" placeholder="請輸入您的問題..."></textarea>
+            <button onclick="sendToAI()">送出</button>
+        </div>
+        <div class="response-box" id="aiResponse">AI 的回覆會顯示在這裡。</div>
+        <div class="prompt-box">
+            <label for="customPrompt">AI Prompt 設定：</label>
+            <textarea id="customPrompt" placeholder="請輸入您的 prompt..."></textarea>
+        </div>
+    </div>
 
-  <script>
-    let isProcessing = false;
-
-    async function sendMessage() {
-      if (isProcessing) return;
-
-      const userInput = document.getElementById('user-input').value;
-      const responseDiv = document.getElementById('response');
-      const submitButton = document.getElementById('submit-btn');
-      
-      if (!userInput.trim()) {
-        responseDiv.textContent = "請輸入訊息！";
-        responseDiv.classList.add('error');
-        return;
-      }
-
-      isProcessing = true;
-      submitButton.disabled = true;
-      responseDiv.classList.remove('error');
-      responseDiv.textContent = "思考中...";
-      
-      try {
-        const response = await fetch("https://script.google.com/macros/s/AKfycbyfscWLvYYW_g_GncTjybvYtPXTZ0pfH19sdVybq8bTVGOJgpv83SmRdWY6xiByICd5/exec", {
-          method: 'POST',
-          mode: 'cors',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            message: userInput
-          })
-        });
-
-        // 確認請求是否成功
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`HTTP 錯誤: ${response.status} - ${errorText}`);
+    <script>
+        function setAvatarImage() {
+            const imageUrl = document.getElementById('imageUrl').value;
+            const avatar = document.getElementById('avatar');
+            if (imageUrl.trim()) {
+                avatar.style.backgroundImage = `url('${imageUrl}')`;
+            } else {
+                alert("請輸入有效的圖片網址！");
+            }
         }
 
-        const data = await response.json();
-        
-        if (data.error) {
-          throw new Error(data.error);
-        }
-        
-        responseDiv.textContent = data.reply || "無回應";
-        document.getElementById('user-input').value = '';  // 清空輸入框
-      } catch (error) {
-        console.error('Error:', error);
-        responseDiv.textContent = `發生錯誤：${error.message}`;
-        responseDiv.classList.add('error');
-      } finally {
-        isProcessing = false;
-        submitButton.disabled = false;
-      }
-    }
+        async function sendToAI() {
+            const userInput = document.getElementById('userInput').value;
+            const customPrompt = document.getElementById('customPrompt').value;
+            const apiUrl = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec"; // 替換為你的 Apps Script 部署網址
 
-    // 設置按 Enter 快捷發送
-    document.getElementById('user-input').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
-  </script>
+            if (!userInput.trim()) {
+                alert("請輸入問題！");
+                return;
+            }
+
+            const payload = {
+                input: userInput,
+                prompt: customPrompt
+            };
+
+            document.getElementById('aiResponse').innerText = "正在處理...";
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                document.getElementById('aiResponse').innerText = result.reply || "AI 無法回覆，請再試一次。";
+            } catch (error) {
+                document.getElementById('aiResponse').innerText = "發生錯誤，請稍後再試。";
+                console.error(error);
+            }
+        }
+    </script>
 </body>
 </html>
