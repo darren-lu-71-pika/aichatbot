@@ -48,7 +48,7 @@
         }
 
         textarea {
-            width: 95%;
+            width: 100%;
             padding: 15px;
             border: 2px solid #81D8D0;
             border-radius: 15px;
@@ -126,7 +126,7 @@
     <div class="settings">
         <div class="input-group">
             <label for="promptTemplate">AI Prompt 設定：</label>
-            <textarea id="promptTemplate" placeholder="在這裡設定 AI 的 prompt...">你是寶可夢時拉比，請依照這個寶可夢的設定回覆提問者的問題，同時為了豐富角色也可以多提到其他寶可夢或是寶可夢世界觀。</textarea>
+            <textarea id="promptTemplate" placeholder="在這裡設定 AI 的 prompt...">你是一個友善的AI助手。請用簡短、清楚的方式回答問題。</textarea>
         </div>
     </div>
 
@@ -170,7 +170,7 @@
                 document.body.removeChild(script);
             };
 
-            const gasUrl = 'https://script.google.com/macros/s/AKfycbzLqHmJqy4Wv2v8zU9I7bPY57Qx9L5rVtx9HIX4dkqbz3k0rbbfwRL7IGYCIK5JF8oL/exec';
+            const gasUrl = 'https://script.google.com/macros/s/1ESytdX1wEj5AT8DP1K5IZJTDsl-6xykLcm6gVoQxwH9WnPJ9-5yQtLNh/exec';
             const params = new URLSearchParams({
                 callback: callbackName,
                 message: userInput,
