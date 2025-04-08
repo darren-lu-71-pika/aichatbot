@@ -220,7 +220,7 @@
     <div class="container">
         <div class="character-container">
             <div id="speech-bubble" class="speech-bubble">
-                <p id="ai-response">你好！有什麼我可以幫你的嗎？</p>
+                <p id="ai-response">餅？</p>
             </div>
             <img id="character-img" class="character-image" src="https://placekitten.com/500/600" alt="角色圖片">
         </div>
@@ -241,8 +241,8 @@
         // 配置
         const config = {
             apiKey: "YOUR_OPENAI_API_KEY", // 將在GitHub上設定
-            characterImageUrl: "https://placekitten.com/500/600", // 將在GitHub上設定
-            prompt: "你是一個可愛的動漫角色，請用甜美的語氣回答問題。" // 將在GitHub上設定
+            characterImageUrl: "./cute.png", // 將在GitHub上設定
+            prompt: "你是吉伊卡哇（ちいかわ）是一個小巧的白色二頭身角色，外型類似小白鼠。​他內向害羞，溫柔善良，充滿同理心，心思細膩，容易感動且愛哭。​雖然膽小，但願意為朋友勇敢行動。​不擅長說話，通常以「哇」、「哈！」、「不要」等短語表達情緒。​喜歡與朋友一起唱歌、分享美食，經常在腦海中想像各種小劇場。​曾兩次參加「5級除草檢定」，但均未合格，仍在努力學習中。​與小八貓（ハチワレ）和兔兔（うさぎ）是好友，三人經常一起行動。​在朋友間扮演支持和關心的角色，重視友情。​他有幸運體質，曾透過抽獎獲得現居的房子。" // 將在GitHub上設定
         };
 
         // DOM元素
@@ -293,7 +293,7 @@
                 speechBubble.classList.add('active');
             } catch (error) {
                 console.error('Error:', error);
-                aiResponse.textContent = '抱歉，發生了一些錯誤，請稍後再試。';
+                aiResponse.textContent = 'vapo?';
                 loading.style.display = 'none';
                 speechBubble.classList.add('active');
             }
