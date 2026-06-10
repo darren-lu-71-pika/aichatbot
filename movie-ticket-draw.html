@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>電影招待券抽籤｜婚禮限定</title>
+  <style>
+    :root {
+      --red-1: #790016;
+      --red-2: #b51224;
+      --red-3: #d93538;
+      --gold-1: #f8d78d;
+      --gold-2: #d7982f;
+      --paper: #fff8eb;
+      --ink: #612117;
+      --line: rgba(155, 80, 37, 0.25);
+      --shadow: 0 24px 70px rgba(57, 7, 14, 0.28);
+      --good: #7f131f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      font-family: "PingFang TC", "Noto Serif TC", "Microsoft JhengHei", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top, rgba(255, 234, 200, 0.16), transparent 24%),
+        linear-gradient(145deg, #690013 0%, var(--red-1) 25%, var(--red-2) 68%, #dd5241 100%);
+    }
+
+    body {
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::before {
+      background:
+        radial-gradient(circle at 12% 22%, rgba(255, 218, 151, 0.14), transparent 12%),
+        radial-gradient(circle at 84% 18%, rgba(255, 218, 151, 0.14), transparent 12%),
+        radial-gradient(circle at 20% 78%, rgba(255, 244, 220, 0.08), transparent 14%),
+        radial-gradient(circle at 80% 82%, rgba(255, 244, 220, 0.08), transparent 14%);
+    }
+
+    body::after {
+      background-image:
+        linear-gradient(rgba(255, 232, 193, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 232, 193, 0.05) 1px, transparent 1px);
+      background-size: 24px 24px;
+      mask-image: radial-gradient(circle at center, black 42%, transparent 88%);
+      -webkit-mask-image: radial-gradient(circle at center, black 42%, transparent 88%);
+    }
+
+    .glow {
+      position: fixed;
+      top: -12vh;
+      width: 64px;
+      aspect-ratio: 0.75;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #ffd18d 0%, #ff9a58 18%, #c91927 100%);
+      box-shadow: 0 0 30px rgba(255, 197, 103, 0.35);
+      opacity: 0.72;
+      z-index: 0;
+      animation: floatDown linear infinite;
+    }
+
+    .glow::before,
+    .glow::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .glow::before {
+      top: 7px;
+      width: 30px;
+      height: 10px;
+      background: rgba(255, 245, 226, 0.52);
+      border-radius: 999px;
+    }
+
+    .glow::after {
+      bottom: -16px;
+      width: 2px;
+      height: 20px;
+      background: rgba(255, 233, 198, 0.8);
+    }
+
+    .shell {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: 28px 18px 70px;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 12px 4px 28px;
+    }
+
+    .crest {
+      width: 86px;
+      height: 86px;
+      margin: 0 auto 14px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 28%, #fff4d4 0%, #f3c66f 56%, #cb881f 100%);
+      box-shadow: 0 14px 34px rgba(53, 6, 10, 0.26);
+      color: #a21d23;
+      font-size: 2.3rem;
+      font-weight: 700;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(2.2rem, 6vw, 4.4rem);
+      letter-spacing: 0.08em;
+      color: #fff7e9;
+      text-shadow: 0 4px 18px rgba(66, 10, 15, 0.35);
+    }
+
+    .hero p {
+      width: min(100%, 700px);
+      margin: 12px auto 0;
+      line-height: 1.8;
+      font-size: 1.04rem;
+      color: rgba(255, 246, 230, 0.92);
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 30px;
+      border: 1px solid rgba(199, 133, 66, 0.35);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.11), transparent 10%),
+        rgba(255, 248, 236, 0.96);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border-radius: 22px;
+      border: 1px solid rgba(213, 160, 80, 0.26);
+      pointer-events: none;
+    }
+
+    .game {
+      padding: 28px 24px 26px;
+    }
+
+    .ribbon {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255, 226, 220, 0.82);
+      color: #a2202c;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+    }
+
+    .game-head {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .game-head h2 {
+      margin: 0;
+      font-size: clamp(1.7rem, 4vw, 2.8rem);
+    }
+
+    .game-head p {
+      max-width: 700px;
+      margin: 12px auto 0;
+      line-height: 1.8;
+    }
+
+    .status {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .status-pill {
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(255, 242, 221, 0.96);
+      border: 1px solid rgba(213, 156, 43, 0.3);
+      font-weight: 700;
+      text-align: center;
+      min-width: 240px;
+    }
+
+    .arena {
+      display: grid;
+      grid-template-columns: 1fr minmax(280px, 420px) 1fr;
+      gap: 20px;
+      align-items: center;
+      min-height: 560px;
+      position: relative;
+    }
+
+    .name-row,
+    .result-zone {
+      min-height: 420px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .name-row h3,
+    .result-zone h3 {
+      margin: 0 0 6px;
+      font-size: 1.05rem;
+      letter-spacing: 0.08em;
+      color: #9b1c31;
+    }
+
+    .slips {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      align-items: center;
+      width: 100%;
+    }
+
+    .slip {
+      position: relative;
+      width: 150px;
+      height: 90px;
+      transform-style: preserve-3d;
+      transition:
+        transform 900ms cubic-bezier(0.2, 0.74, 0.2, 1),
+        opacity 500ms ease,
+        filter 300ms ease;
+      filter: drop-shadow(0 10px 22px rgba(116, 42, 24, 0.16));
+    }
+
+    .slip-card,
+    .slip-fold {
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      border: 1px solid rgba(184, 123, 57, 0.24);
+      backface-visibility: hidden;
+    }
+
+    .slip-card {
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.24), transparent 18%),
+        var(--paper);
+      color: #95202b;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+    }
+
+    .slip-card::before {
+      content: "電影籤";
+      position: absolute;
+      top: 10px;
+      left: 14px;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      color: rgba(133, 36, 29, 0.78);
+    }
+
+    .slip-fold {
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, #cc2c37 0%, #a91424 100%);
+      transform: rotateY(180deg);
+      color: rgba(255, 247, 232, 0.88);
+      font-size: 0.92rem;
+      letter-spacing: 0.18em;
+    }
+
+    .slip-fold::before,
+    .slip-fold::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(135deg, transparent 49.2%, rgba(255, 233, 196, 0.78) 49.2%, rgba(255, 233, 196, 0.78) 50.8%, transparent 50.8%);
+      border-radius: inherit;
+      opacity: 0.55;
+    }
+
+    .slip-fold::after {
+      transform: scaleX(-1);
+    }
+
+    .slip.folded {
+      transform:
+        translate(var(--tx), var(--ty))
+        scale(0.46)
+        rotate(-14deg)
+        rotateY(180deg);
+    }
+
+    .slip.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .machine-wrap {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 500px;
+    }
+
+    .machine {
+      position: relative;
+      width: min(100%, 360px);
+      aspect-ratio: 0.84;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform-origin: center bottom;
+    }
+
+    .machine.shake {
+      animation: shakeJar 1.5s ease-in-out 2;
+    }
+
+    .jar {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .jar-top {
+      position: absolute;
+      top: 6%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 48%;
+      height: 18%;
+      border-radius: 26px;
+      background: linear-gradient(180deg, #fed681 0%, #db992e 100%);
+      box-shadow: inset 0 2px 0 rgba(255, 249, 228, 0.5);
+      z-index: 4;
+    }
+
+    .jar-neck {
+      position: absolute;
+      top: 14%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 38%;
+      height: 16%;
+      border-radius: 0 0 26px 26px;
+      background: linear-gradient(180deg, rgba(255, 235, 199, 0.78), rgba(246, 208, 143, 0.56));
+      border: 2px solid rgba(255, 247, 225, 0.34);
+      z-index: 1;
+    }
+
+    .jar-body {
+      position: absolute;
+      left: 50%;
+      bottom: 8%;
+      transform: translateX(-50%);
+      width: 78%;
+      height: 68%;
+      border-radius: 42% 42% 30% 30% / 28% 28% 18% 18%;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.55), rgba(255, 232, 199, 0.2) 18%, rgba(241, 185, 90, 0.12) 42%, rgba(255, 255, 255, 0.1) 80%),
+        linear-gradient(180deg, rgba(255, 249, 236, 0.48), rgba(244, 190, 104, 0.12));
+      border: 2px solid rgba(255, 248, 231, 0.46);
+      box-shadow:
+        inset 0 0 34px rgba(255, 255, 255, 0.18),
+        inset 0 -18px 34px rgba(197, 72, 48, 0.08),
+        0 26px 42px rgba(84, 12, 19, 0.12);
+      overflow: hidden;
+      z-index: 2;
+    }
+
+    .jar-body::before {
+      content: "";
+      position: absolute;
+      left: 8%;
+      top: 10%;
+      width: 20%;
+      height: 66%;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.58), transparent);
+      opacity: 0.55;
+    }
+
+    .jar-label {
+      position: absolute;
+      left: 50%;
+      top: 35%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at 34% 28%, #fff4d6 0%, #f1c56e 58%, #d08f22 100%);
+      color: #9f1923;
+      font-size: 2rem;
+      font-weight: 700;
+      box-shadow: 0 14px 34px rgba(103, 25, 15, 0.12);
+      z-index: 3;
+    }
+
+    .jar-base {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 62%;
+      height: 9%;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #b71a28 0%, #8b0c19 100%);
+      box-shadow: 0 14px 24px rgba(88, 11, 18, 0.16);
+    }
+
+    .inside-slip {
+      position: absolute;
+      width: 66px;
+      height: 30px;
+      border-radius: 10px;
+      background: linear-gradient(180deg, #cf3540 0%, #a91627 100%);
+      border: 1px solid rgba(255, 236, 203, 0.18);
+      opacity: 0;
+      transform: scale(0.6);
+      transition: opacity 400ms ease, transform 400ms ease;
+    }
+
+    .inside-slip.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .inside-slip.one {
+      left: 18%;
+      bottom: 22%;
+      rotate: -18deg;
+    }
+
+    .inside-slip.two {
+      left: 38%;
+      bottom: 16%;
+      rotate: 11deg;
+    }
+
+    .inside-slip.three {
+      right: 16%;
+      bottom: 23%;
+      rotate: 18deg;
+    }
+
+    .winner-shell {
+      position: relative;
+      min-height: 190px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .winner-slip {
+      position: absolute;
+      top: 18px;
+      width: 172px;
+      height: 220px;
+      opacity: 0;
+      transform: translateY(40px) scale(0.88);
+      transition: transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 500ms ease;
+      filter: drop-shadow(0 22px 36px rgba(100, 25, 14, 0.18));
+    }
+
+    .winner-slip.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .winner-paper {
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.25), transparent 16%),
+        var(--paper);
+      border: 1px solid rgba(188, 124, 57, 0.24);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      overflow: hidden;
+    }
+
+    .winner-paper::before {
+      content: "天選影伴";
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      color: rgba(147, 31, 34, 0.78);
+    }
+
+    .winner-name {
+      font-size: 3rem;
+      letter-spacing: 0.24em;
+      color: #9b1c31;
+      font-weight: 700;
+      margin-left: 0.24em;
+    }
+
+    .winner-caption {
+      font-size: 0.95rem;
+      line-height: 1.7;
+      text-align: center;
+      padding: 0 18px;
+      color: #6b2417;
+    }
+
+    .winner-banner {
+      min-height: 122px;
+      width: min(100%, 280px);
+      padding: 18px 18px 16px;
+      border-radius: 24px;
+      background:
+        linear-gradient(180deg, rgba(255, 247, 232, 0.98), rgba(255, 236, 214, 0.95));
+      border: 1px solid rgba(212, 160, 81, 0.26);
+      text-align: center;
+      line-height: 1.8;
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity 500ms ease, transform 500ms ease;
+    }
+
+    .winner-banner.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .winner-banner strong {
+      display: block;
+      color: #981824;
+      font-size: 1.14rem;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .button {
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 22px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 180ms ease, filter 180ms ease, opacity 180ms ease;
+    }
+
+    .button:hover,
+    .button:focus-visible {
+      transform: translateY(-2px);
+      filter: brightness(1.03);
+      outline: none;
+    }
+
+    .button-primary {
+      color: #fffdf6;
+      background: linear-gradient(135deg, #aa1723, #e0643e);
+      box-shadow: 0 12px 28px rgba(146, 26, 35, 0.28);
+    }
+
+    .button-secondary {
+      color: #7f2518;
+      background: rgba(255, 239, 217, 0.96);
+      border: 1px solid rgba(212, 159, 80, 0.34);
+    }
+
+    .button[disabled] {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+      filter: none;
+    }
+
+    .sparkles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 3;
+    }
+
+    .spark {
+      position: absolute;
+      width: 10px;
+      height: 16px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #ffe7a9 0%, #ff8ca0 100%);
+      opacity: 0.88;
+      animation: sparkleFall linear forwards;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      text-align: center;
+      line-height: 1.8;
+      color: rgba(255, 245, 229, 0.82);
+      font-size: 0.95rem;
+    }
+
+    @keyframes floatDown {
+      0% {
+        transform: translate3d(0, -10vh, 0) rotate(0deg);
+      }
+      50% {
+        transform: translate3d(14px, 50vh, 0) rotate(4deg);
+      }
+      100% {
+        transform: translate3d(-10px, 118vh, 0) rotate(-4deg);
+      }
+    }
+
+    @keyframes shakeJar {
+      0%, 100% {
+        transform: rotate(0deg);
+      }
+      15% {
+        transform: rotate(-7deg);
+      }
+      30% {
+        transform: rotate(7deg);
+      }
+      45% {
+        transform: rotate(-9deg);
+      }
+      60% {
+        transform: rotate(8deg);
+      }
+      75% {
+        transform: rotate(-5deg);
+      }
+    }
+
+    @keyframes sparkleFall {
+      from {
+        transform: translate3d(0, 0, 0) rotate(0deg);
+      }
+      to {
+        transform: translate3d(var(--drift), 115vh, 0) rotate(340deg);
+      }
+    }
+
+    @media (max-width: 940px) {
+      .arena {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        min-height: auto;
+      }
+
+      .name-row,
+      .result-zone {
+        min-height: auto;
+      }
+
+      .slips {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .winner-shell {
+        min-height: 230px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .shell {
+        padding-inline: 12px;
+      }
+
+      .game {
+        padding: 20px 16px 22px;
+      }
+
+      .slip {
+        width: 108px;
+        height: 72px;
+      }
+
+      .slip-card {
+        font-size: 1.5rem;
+      }
+
+      .machine {
+        width: min(100%, 320px);
+      }
+
+      .winner-slip {
+        width: 154px;
+        height: 198px;
+      }
+
+      .winner-name {
+        font-size: 2.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="glow" style="left: 9%; animation-duration: 16s; animation-delay: -4s;"></div>
+  <div class="glow" style="left: 25%; animation-duration: 18s; animation-delay: -12s; transform: scale(0.86);"></div>
+  <div class="glow" style="left: 72%; animation-duration: 17s; animation-delay: -8s;"></div>
+  <div class="glow" style="left: 88%; animation-duration: 19s; animation-delay: -15s; transform: scale(0.82);"></div>
+
+  <div class="sparkles" id="sparkles" aria-hidden="true"></div>
+
+  <main class="shell">
+    <section class="hero">
+      <div class="crest" aria-hidden="true">囍</div>
+      <h1>電影招待券抽籤</h1>
+      <p>
+        婚禮限定的天選時刻。三張籤寫上名字、折進籤筒、搖一搖之後，
+        今天誰會獲得電影招待券，以及一同看電影的榮耀資格，就在這一抽揭曉。
+      </p>
+    </section>
+
+    <section class="card game">
+      <div class="game-head">
+        <span class="ribbon">喜氣抽籤儀式</span>
+        <h2>誰將成為今晚的天選影伴？</h2>
+        <p>
+          先請三張籤亮相，再把名字折好放進籤筒裡。
+          等筒身搖到夠有誠意，得主就會從紅運裡自己冒出來。
+        </p>
+      </div>
+
+      <div class="status">
+        <div class="status-pill" id="statusText">請先讓三張籤入筒</div>
+      </div>
+
+      <div class="arena">
+        <section class="name-row">
+          <h3>本次入筒名單</h3>
+          <div class="slips" id="slips">
+            <div class="slip" data-name="蕭" style="--tx: 238px; --ty: 250px;">
+              <div class="slip-card">蕭</div>
+              <div class="slip-fold">囍</div>
+            </div>
+            <div class="slip" data-name="顏" style="--tx: 260px; --ty: 315px;">
+              <div class="slip-card">顏</div>
+              <div class="slip-fold">囍</div>
+            </div>
+            <div class="slip" data-name="邱" style="--tx: 292px; --ty: 268px;">
+              <div class="slip-card">邱</div>
+              <div class="slip-fold">囍</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="machine-wrap">
+          <div class="machine" id="machine">
+            <div class="jar">
+              <div class="jar-top"></div>
+              <div class="jar-neck"></div>
+              <div class="jar-body">
+                <div class="inside-slip one" id="inside1"></div>
+                <div class="inside-slip two" id="inside2"></div>
+                <div class="inside-slip three" id="inside3"></div>
+              </div>
+              <div class="jar-label">籤</div>
+              <div class="jar-base"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="result-zone">
+          <h3>得主揭曉區</h3>
+          <div class="winner-shell">
+            <div class="winner-slip" id="winnerSlip">
+              <div class="winner-paper">
+                <div class="winner-name">蕭</div>
+                <div class="winner-caption">獲得電影招待券<br>以及一同看電影資格</div>
+              </div>
+            </div>
+          </div>
+          <div class="winner-banner" id="winnerBanner">
+            <strong>恭喜蕭</strong>
+            這一抽由你中籤。今晚的電影邀請與陪看資格，就在這張喜氣洋洋的籤裡定案。
+          </div>
+        </section>
+      </div>
+
+      <div class="actions">
+        <button class="button button-primary" id="loadButton">把三張籤折好入筒</button>
+        <button class="button button-primary" id="shakeButton" disabled>搖一搖籤筒</button>
+        <button class="button button-secondary" id="resetButton">重新抽一次</button>
+      </div>
+    </section>
+
+    <p class="footer-note">
+      這個版本是純前端單檔頁面，直接放上 GitHub Pages 就能玩。<br>
+      你如果要，我下一輪可以再幫你加上「更誇張的音效」、「新人名字版」或「最後大字賀喜畫面」。
+    </p>
+  </main>
+
+  <script>
+    const loadButton = document.getElementById("loadButton");
+    const shakeButton = document.getElementById("shakeButton");
+    const resetButton = document.getElementById("resetButton");
+    const machine = document.getElementById("machine");
+    const statusText = document.getElementById("statusText");
+    const winnerSlip = document.getElementById("winnerSlip");
+    const winnerBanner = document.getElementById("winnerBanner");
+    const sparkles = document.getElementById("sparkles");
+    const slips = Array.from(document.querySelectorAll(".slip"));
+    const insideSlips = [
+      document.getElementById("inside1"),
+      document.getElementById("inside2"),
+      document.getElementById("inside3")
+    ];
+
+    let loaded = false;
+    let drawing = false;
+
+    function playTone(frequency, duration, delay = 0, type = "sine") {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+
+      window.setTimeout(() => {
+        const context = new AudioContextClass();
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+
+        oscillator.type = type;
+        oscillator.frequency.value = frequency;
+        gain.gain.setValueAtTime(0.0001, context.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.038, context.currentTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + duration);
+
+        oscillator.connect(gain);
+        gain.connect(context.destination);
+        oscillator.start();
+        oscillator.stop(context.currentTime + duration + 0.02);
+        oscillator.onended = () => context.close();
+      }, delay * 1000);
+    }
+
+    function burstSparkles(count) {
+      for (let i = 0; i < count; i += 1) {
+        const spark = document.createElement("span");
+        spark.className = "spark";
+        spark.style.left = Math.random() * 100 + "vw";
+        spark.style.animationDuration = 3.2 + Math.random() * 2.2 + "s";
+        spark.style.animationDelay = Math.random() * 0.18 + "s";
+        spark.style.opacity = (0.55 + Math.random() * 0.4).toFixed(2);
+        spark.style.setProperty("--drift", (Math.random() * 180 - 90) + "px");
+        sparkles.appendChild(spark);
+
+        window.setTimeout(() => {
+          spark.remove();
+        }, 6000);
+      }
+    }
+
+    function resetGame() {
+      loaded = false;
+      drawing = false;
+      statusText.textContent = "請先讓三張籤入筒";
+      winnerSlip.classList.remove("show");
+      winnerBanner.classList.remove("show");
+      shakeButton.disabled = true;
+      loadButton.disabled = false;
+      slips.forEach((slip) => {
+        slip.classList.remove("folded", "hidden");
+      });
+      insideSlips.forEach((item) => item.classList.remove("visible"));
+      machine.classList.remove("shake");
+    }
+
+    function loadSlips() {
+      if (loaded || drawing) return;
+
+      statusText.textContent = "三張籤正在折好入筒";
+      loadButton.disabled = true;
+
+      slips.forEach((slip, index) => {
+        window.setTimeout(() => {
+          slip.classList.add("folded");
+          playTone(540 + index * 70, 0.07, 0, "triangle");
+        }, index * 320);
+
+        window.setTimeout(() => {
+          slip.classList.add("hidden");
+          insideSlips[index].classList.add("visible");
+        }, 780 + index * 320);
+      });
+
+      window.setTimeout(() => {
+        loaded = true;
+        shakeButton.disabled = false;
+        statusText.textContent = "入筒完成，現在可以搖一搖";
+      }, 1850);
+    }
+
+    function revealWinner() {
+      winnerSlip.classList.add("show");
+      winnerBanner.classList.add("show");
+      statusText.textContent = "天選影伴已揭曉";
+      burstSparkles(34);
+      playTone(660, 0.08, 0, "triangle");
+      playTone(880, 0.08, 0.09, "triangle");
+      playTone(1120, 0.11, 0.19, "sine");
+      drawing = false;
+    }
+
+    function shakeJar() {
+      if (!loaded || drawing) return;
+      drawing = true;
+      shakeButton.disabled = true;
+      statusText.textContent = "籤筒搖晃中，請稍候見證";
+      machine.classList.remove("shake");
+      void machine.offsetWidth;
+      machine.classList.add("shake");
+
+      playTone(220, 0.1, 0, "square");
+      playTone(250, 0.1, 0.18, "square");
+      playTone(220, 0.1, 0.34, "square");
+      playTone(280, 0.1, 0.52, "square");
+
+      window.setTimeout(() => {
+        revealWinner();
+      }, 2350);
+    }
+
+    loadButton.addEventListener("click", loadSlips);
+    shakeButton.addEventListener("click", shakeJar);
+    resetButton.addEventListener("click", resetGame);
+
+    resetGame();
+  </script>
+</body>
+</html>
